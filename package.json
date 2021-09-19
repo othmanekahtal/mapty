@@ -1,0 +1,11 @@
+{
+  "name": "mapty",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:othmanekahtal/mapty.git",
+  "author": "othmanekahtal <othmanekahtal@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "uniqid": "^5.4.0"
+  }
+}
