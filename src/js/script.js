@@ -32,10 +32,8 @@ class App {
 
     _loadMap(position) {
         const {latitude, longitude} = position.coords;
-        console.log(latitude, longitude)
         const coods = [latitude, longitude]
         // this is undefined : use bind in getCurrentLocation to set this keyword !!!!!!!!!
-        console.log(this)
         this.#map = L.map('map').setView(coods, 13);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -78,29 +76,57 @@ class App {
                 )
             ).setPopupContent('WORKOUT')
             .openPopup();
+        e.target.reset();
+        inputDistance.blur();
     }
 }
 
 class Workout {
-    #date = new Date();
-    #id = uniqid(this.#date);
-    #workout;
-    #distance;
-    #duration;
+    _date = new Date();
+    _id = uniqid(`workout-${Date.now()}-`);
+    _workout;
+    _distance;
+    _duration;
+    _coords;
 
     constructor(coords, distance, duration) {
-        this.#distance = distance;
-        this.#coords = coords;
-        this.#duration = duration;
+        this._distance = distance;
+        this._coords = coords;
+        this._duration = duration;
     }
 }
 
 class Running extends Workout {
-
+    #cadence;
+    #pace;
+    constructor(coords, distance, duration, cadence) {
+        super(coords, distance, duration);
+        this.#cadence = cadence;
+        this.calcPace();
+    }
+    calcPace(){
+        this.#pace = this._distance / this._duration;
+        return this.#pace;
+    }
 }
 
 class Cycling extends Workout {
+    #elevationGain;
+     #speed;
+    constructor(coords, distance, duration, elevationGain) {
+        super(coords, distance, duration);
+        this.#elevationGain = elevationGain;
+
+    }
+    calcSpeed(){
+        this.#speed = this._distance / ~(this._duration/60);
+        return this.#speed;
+    }
 
 }
 
 const app = new App();
+let WorkoutType = inputType.value="running" ? 'running':"cycling";
+const Run1 = new Running([13,-23],12,10,5);
+const Cycl1 = new Running([-13,3],15,20,15);
+console.log(Run1,Cycl1);

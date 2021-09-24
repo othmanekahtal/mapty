@@ -5,7 +5,12 @@
   "repository": "git@github.com:othmanekahtal/mapty.git",
   "author": "othmanekahtal <othmanekahtal@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "dev": "parcel ./src/index.html",
+    "buid": "parcel build ./src/index.html"
+  },
   "dependencies": {
+    "leaflet": "^1.7.1",
     "uniqid": "^5.4.0"
   }
 }

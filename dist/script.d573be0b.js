@@ -14517,6 +14517,8 @@ function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Re
 
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); }
 
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
@@ -14587,10 +14589,7 @@ var App = /*#__PURE__*/function () {
       var _position$coords = position.coords,
           latitude = _position$coords.latitude,
           longitude = _position$coords.longitude;
-      console.log(latitude, longitude);
       var coods = [latitude, longitude]; // this is undefined : use bind in getCurrentLocation to set this keyword !!!!!!!!!
-
-      console.log(this);
 
       _classPrivateFieldSet(this, _map, _leaflet.default.map('map').setView(coods, 13));
 
@@ -14634,93 +14633,128 @@ var App = /*#__PURE__*/function () {
         autoClose: false,
         className: 'running-popup'
       })).setPopupContent('WORKOUT').openPopup();
+
+      e.target.reset();
+      inputDistance.blur();
     }
   }]);
 
   return App;
 }();
 
-var _date = /*#__PURE__*/new WeakMap();
-
-var _id = /*#__PURE__*/new WeakMap();
-
-var _workout = /*#__PURE__*/new WeakMap();
-
-var _distance = /*#__PURE__*/new WeakMap();
-
-var _duration = /*#__PURE__*/new WeakMap();
-
-var _coords = /*#__PURE__*/new WeakMap();
-
 var Workout = function Workout(coords, distance, duration) {
   _classCallCheck(this, Workout);
 
-  _classPrivateFieldInitSpec(this, _date, {
-    writable: true,
-    value: new Date()
-  });
+  _defineProperty(this, "_date", new Date());
 
-  _classPrivateFieldInitSpec(this, _id, {
-    writable: true,
-    value: (0, _uniqid.default)(_classPrivateFieldGet(this, _date))
-  });
+  _defineProperty(this, "_id", (0, _uniqid.default)("workout-".concat(Date.now(), "-")));
 
-  _classPrivateFieldInitSpec(this, _workout, {
-    writable: true,
-    value: void 0
-  });
+  _defineProperty(this, "_workout", void 0);
 
-  _classPrivateFieldInitSpec(this, _distance, {
-    writable: true,
-    value: void 0
-  });
+  _defineProperty(this, "_distance", void 0);
 
-  _classPrivateFieldInitSpec(this, _duration, {
-    writable: true,
-    value: void 0
-  });
+  _defineProperty(this, "_duration", void 0);
 
-  _classPrivateFieldInitSpec(this, _coords, {
-    writable: true,
-    value: void 0
-  });
+  _defineProperty(this, "_coords", void 0);
 
-  _classPrivateFieldSet(this, _distance, distance);
-
-  _classPrivateFieldSet(this, _coords, coords);
-
-  _classPrivateFieldSet(this, _duration, duration);
+  this._distance = distance;
+  this._coords = coords;
+  this._duration = duration;
 };
+
+var _cadence = /*#__PURE__*/new WeakMap();
+
+var _pace = /*#__PURE__*/new WeakMap();
 
 var Running = /*#__PURE__*/function (_Workout) {
   _inherits(Running, _Workout);
 
   var _super = _createSuper(Running);
 
-  function Running() {
+  function Running(coords, distance, duration, cadence) {
+    var _this2;
+
     _classCallCheck(this, Running);
 
-    return _super.apply(this, arguments);
+    _this2 = _super.call(this, coords, distance, duration);
+
+    _classPrivateFieldInitSpec(_assertThisInitialized(_this2), _cadence, {
+      writable: true,
+      value: void 0
+    });
+
+    _classPrivateFieldInitSpec(_assertThisInitialized(_this2), _pace, {
+      writable: true,
+      value: void 0
+    });
+
+    _classPrivateFieldSet(_assertThisInitialized(_this2), _cadence, cadence);
+
+    _this2.calcPace();
+
+    return _this2;
   }
+
+  _createClass(Running, [{
+    key: "calcPace",
+    value: function calcPace() {
+      _classPrivateFieldSet(this, _pace, this._distance / this._duration);
+
+      return _classPrivateFieldGet(this, _pace);
+    }
+  }]);
 
   return Running;
 }(Workout);
+
+var _elevationGain = /*#__PURE__*/new WeakMap();
+
+var _speed = /*#__PURE__*/new WeakMap();
 
 var Cycling = /*#__PURE__*/function (_Workout2) {
   _inherits(Cycling, _Workout2);
 
   var _super2 = _createSuper(Cycling);
 
-  function Cycling() {
+  function Cycling(coords, distance, duration, elevationGain) {
+    var _this3;
+
     _classCallCheck(this, Cycling);
 
-    return _super2.apply(this, arguments);
+    _this3 = _super2.call(this, coords, distance, duration);
+
+    _classPrivateFieldInitSpec(_assertThisInitialized(_this3), _elevationGain, {
+      writable: true,
+      value: void 0
+    });
+
+    _classPrivateFieldInitSpec(_assertThisInitialized(_this3), _speed, {
+      writable: true,
+      value: void 0
+    });
+
+    _classPrivateFieldSet(_assertThisInitialized(_this3), _elevationGain, elevationGain);
+
+    return _this3;
   }
+
+  _createClass(Cycling, [{
+    key: "calcSpeed",
+    value: function calcSpeed() {
+      _classPrivateFieldSet(this, _speed, this._distance / ~(this._duration / 60));
+
+      return _classPrivateFieldGet(this, _speed);
+    }
+  }]);
 
   return Cycling;
 }(Workout);
 
 var app = new App();
+var WorkoutType = inputType.value = "running" ? 'running' : "cycling";
+var Run1 = new Running([13, -23], 12, 10, 5);
+var Cycl1 = new Running([-13, 3], 15, 20, 15);
+console.log(Run1, Cycl1);
 },{"uniqid":"../node_modules/uniqid/index.js","leaflet":"../node_modules/leaflet/dist/leaflet-src.js"}],"../../../../../../../home/mi/.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
@@ -14749,7 +14783,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57133" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "57959" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
